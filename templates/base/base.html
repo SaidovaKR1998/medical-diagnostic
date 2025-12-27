@@ -1,11 +1,32 @@
-<div class="navbar-nav">
-    {% if user.is_authenticated %}
-        <span class="nav-link">
-            <i class="bi bi-person-circle me-1"></i>{{ user.username }}
-        </span>
-    {% else %}
-        <a class="nav-link" href="#">
-            <i class="bi bi-box-arrow-in-right me-1"></i>Войти
-        </a>
-    {% endif %}
+<div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                Главная
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if 'services' in request.path %}active{% endif %}" href="{% url 'services:list' %}">
+                Услуги
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">О клинике</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Контакты</a>
+        </li>
+    </ul>
+
+    <!-- Правая часть - авторизация -->
+    <div class="navbar-nav">
+        {% if user.is_authenticated %}
+            <span class="nav-link">
+                <i class="bi bi-person-circle"></i> {{ user.username }}
+            </span>
+            <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+        {% else %}
+            <a class="nav-link" href="{% url 'login' %}">Войти</a>
+        {% endif %}
+    </div>
 </div>
