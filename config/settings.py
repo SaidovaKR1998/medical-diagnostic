@@ -122,10 +122,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Перенаправления URL после входа/выхода
-LOGIN_REDIRECT_URL = '/accounts/profile/'
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/accounts/login/'
+# Перенаправление после входа/выхода
+LOGIN_REDIRECT_URL = '/'  # После входа - на главную
+LOGOUT_REDIRECT_URL = '/'  # После выхода - на главную
+LOGIN_URL = '/accounts/login/'  # URL для страницы входа
 
 # Язык и время
 LANGUAGE_CODE = 'ru-ru'
