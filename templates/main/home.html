@@ -1,0 +1,39 @@
+{% extends 'base/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>Добро пожаловать в Медицинский Диагностический Центр!</h1>
+        <p class="lead">Мы предлагаем полный спектр диагностических услуг.</p>
+
+        <div class="row mt-4">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">МРТ</h5>
+                        <p class="card-text">Магнитно-резонансная томография</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">КТ</h5>
+                        <p class="card-text">Компьютерная томография</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Запись на прием</h5>
+                <p>Запишитесь на консультацию онлайн</p>
+                <a href="#" class="btn btn-primary">Записаться</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
