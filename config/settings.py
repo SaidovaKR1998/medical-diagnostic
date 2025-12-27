@@ -28,10 +28,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Ваши приложения (пока добавляем, потом создадим)
-    'main',
-    'services',
-    'appointments',
-    'accounts',
+    #'main',
+    #'services',
+    #'appointments',
+    #'accounts',
 
     # Сторонние приложения
     'crispy_forms',
