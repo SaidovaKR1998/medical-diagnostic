@@ -43,8 +43,21 @@ class Service(models.Model):
         ordering = ['name']
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
+        from django.utils.text import slugify
+
+        # Если slug пустой или None
+        if not self.slug or self.slug.strip() == '':
+            base_slug = slugify(self.name)
+
+            # Проверяем уникальность
+            if Service.objects.filter(slug=base_slug).exclude(id=self.id).exists():
+                counter = 1
+                while Service.objects.filter(slug=f"{base_slug}-{counter}").exists():
+                    counter += 1
+                self.slug = f"{base_slug}-{counter}"
+            else:
+                self.slug = base_slug
+
         super().save(*args, **kwargs)
 
     def __str__(self):
