@@ -1,47 +1,136 @@
 {% extends 'base/base.html' %}
 
-{% block title %}{{ title }}{% endblock %}
+{% block title %}Медицинская Диагностика - Главная{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <h1>Добро пожаловать в Медицинский Диагностический Центр!</h1>
-        <p class="lead">Мы предлагаем полный спектр диагностических услуг.</p>
+<!-- Hero секция -->
+<section class="hero-section mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Современная медицинская диагностика
+                    <span class="text-primary">для вашего здоровья</span>
+                </h1>
+                <p class="lead mb-4">
+                    Точная диагностика - основа правильного лечения.
+                    В нашем центре используется новейшее оборудование
+                    и работают опытные специалисты.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'services:list' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="bi bi-clipboard-pulse me-2"></i>Наши услуги
+                    </a>
+                    <a href="#" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="bi bi-calendar-check me-2"></i>Записаться онлайн
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                     class="img-fluid rounded-lg shadow"
+                     alt="Медицинский центр"
+                     style="max-height: 400px; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+</section>
 
-        <div class="row mt-4">
+<!-- Услуги -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Популярные услуги</h2>
+            <p class="text-muted lead">Полный спектр диагностических услуг</p>
+        </div>
+
+        <div class="row g-4">
             {% for service in services %}
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            <i class="bi {{ service.icon }} text-primary me-2"></i>
-                            {{ service.name }}
-                        </h5>
-                        <p class="card-text">{{ service.description }}</p>
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi {{ service.icon }} icon-lg"></i>
+                        </div>
+                        <h5 class="card-title mb-3">{{ service.name }}</h5>
+                        <p class="card-text text-muted">{{ service.description }}</p>
+                        <a href="{% url 'services:list' %}" class="btn btn-outline-primary btn-sm">Подробнее</a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-    </div>
 
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Запись на прием</h5>
-                <p>Запишитесь на консультацию онлайн</p>
-                <a href="#" class="btn btn-primary">Записаться</a>
-            </div>
-        </div>
-
-        <div class="card mt-3">
-            <div class="card-body">
-                <h5 class="card-title">Контакты</h5>
-                <p><i class="bi bi-telephone"></i> +7 (495) 123-45-67</p>
-                <p><i class="bi bi-clock"></i> Пн-Пт: 8:00-20:00</p>
-                <p><i class="bi bi-geo-alt"></i> г. Москва, ул. Медицинская, 15</p>
-            </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'services:list' %}" class="btn btn-primary px-5">
+                <i class="bi bi-arrow-right-circle me-2"></i>Все услуги
+            </a>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Преимущества -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Почему выбирают нас</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 bg-white">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-shield-check text-primary icon-lg"></i>
+                        </div>
+                        <h5 class="card-title mb-3">Точность результатов</h5>
+                        <p class="card-text text-muted">Используем современное оборудование экспертного класса</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 bg-white">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-people text-primary icon-lg"></i>
+                        </div>
+                        <h5 class="card-title mb-3">Опытные врачи</h5>
+                        <p class="card-text text-muted">Работают специалисты с многолетним опытом</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 bg-white">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="bi bi-clock-history text-primary icon-lg"></i>
+                        </div>
+                        <h5 class="card-title mb-3">Быстрые результаты</h5>
+                        <p class="card-text text-muted">Получите результаты исследований в кратчайшие сроки</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA секция -->
+<section class="py-5">
+    <div class="container">
+        <div class="card bg-primary text-white border-0">
+            <div class="card-body p-5 text-center">
+                <h3 class="card-title display-6 fw-bold mb-3">Готовы позаботиться о здоровье?</h3>
+                <p class="card-text lead mb-4 opacity-90">Запишитесь на консультацию прямо сейчас</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <a href="tel:+74951234567" class="btn btn-light btn-lg px-5">
+                        <i class="bi bi-telephone me-2"></i>Позвонить
+                    </a>
+                    <a href="#" class="btn btn-outline-light btn-lg px-5">
+                        <i class="bi bi-whatsapp me-2"></i>Написать в WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}
