@@ -27,11 +27,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Ваши приложения (пока добавляем, потом создадим)
-    #'main',
-    #'services',
-    #'appointments',
-    #'accounts',
+    # Приложения (пока добавляем, потом создадим)
+    'main',
+    'services',
+    'appointments',
+    'accounts',
 
     # Сторонние приложения
     'crispy_forms',
