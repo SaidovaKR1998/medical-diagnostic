@@ -5,8 +5,8 @@ def home(request):
     context = {
         'title': 'Медицинская Диагностика - Главная',
         'services': [
-            {'name': 'МРТ', 'icon': 'bi-magnet', 'description': 'Магнитно-резонансная томография'},
-            {'name': 'КТ', 'icon': 'bi-cpu', 'description': 'Компьютерная томография'},
+            {'name': 'МРТ', 'icon': 'bi-magnet', 'description': 'Магнитно-резонансная томография всего тела'},
+            {'name': 'КТ', 'icon': 'bi-cpu', 'description': 'Компьютерная томография высокой точности'},
             {'name': 'УЗИ', 'icon': 'bi-soundwave', 'description': 'Ультразвуковая диагностика'},
             {'name': 'Анализы', 'icon': 'bi-droplet', 'description': 'Лабораторные исследования'},
         ]
