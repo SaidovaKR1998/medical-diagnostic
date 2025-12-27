@@ -1,5 +1,7 @@
 {% extends 'base/base.html' %}
 
+{% block title %}{{ title }}{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-md-8">
@@ -7,22 +9,19 @@
         <p class="lead">Мы предлагаем полный спектр диагностических услуг.</p>
 
         <div class="row mt-4">
+            {% for service in services %}
             <div class="col-md-6 mb-3">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">МРТ</h5>
-                        <p class="card-text">Магнитно-резонансная томография</p>
+                        <h5 class="card-title">
+                            <i class="bi {{ service.icon }} text-primary me-2"></i>
+                            {{ service.name }}
+                        </h5>
+                        <p class="card-text">{{ service.description }}</p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">КТ</h5>
-                        <p class="card-text">Компьютерная томография</p>
-                    </div>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 
@@ -32,6 +31,15 @@
                 <h5 class="card-title">Запись на прием</h5>
                 <p>Запишитесь на консультацию онлайн</p>
                 <a href="#" class="btn btn-primary">Записаться</a>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Контакты</h5>
+                <p><i class="bi bi-telephone"></i> +7 (495) 123-45-67</p>
+                <p><i class="bi bi-clock"></i> Пн-Пт: 8:00-20:00</p>
+                <p><i class="bi bi-geo-alt"></i> г. Москва, ул. Медицинская, 15</p>
             </div>
         </div>
     </div>
