@@ -69,3 +69,16 @@ def appointment_history(request):
         'appointments': appointments,
     }
     return render(request, 'accounts/appointment_history.html', context)
+
+@login_required
+def appointment_history(request):
+    """История записей пользователя"""
+    appointments = Appointment.objects.filter(
+        patient=request.user
+    ).order_by('-appointment_date', '-appointment_time')
+
+    context = {
+        'title': 'Мои записи',
+        'appointments': appointments,
+    }
+    return render(request, 'accounts/appointment_history.html', context)
