@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import ContactForm
-
+from appointments.models import Doctor
 
 def home(request):
     """Главная страница"""
@@ -40,4 +40,14 @@ def contacts(request):
     return render(request, 'main/contacts.html', {
         'title': 'Контакты',
         'form': form
+    })
+
+
+def about(request):
+    """Страница о компании"""
+    doctors = Doctor.objects.filter(is_active=True)
+
+    return render(request, 'main/about.html', {
+        'title': 'О компании',
+        'doctors': doctors
     })
