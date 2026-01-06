@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # Сторонние приложения
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
 ]
 
 # Настройки crispy forms для Bootstrap 5
