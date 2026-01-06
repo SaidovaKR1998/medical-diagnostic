@@ -6,6 +6,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
 from services.models import ServiceCategory, Service
+from accounts.models import CustomUser  # Импортируем CustomUser
+from appointments.models import Doctor  # Импортируем Doctor
 
 print('Создаем категории услуг...')
 
@@ -15,7 +17,8 @@ categories = [
      'description': 'Современные аппаратные методы исследования'},
     {'name': 'Лабораторные исследования', 'icon': 'bi-droplet',
      'description': 'Анализы крови, мочи и другие лабораторные тесты'},
-    {'name': 'Ультразвуковая диагностика', 'icon': 'bi-soundwave', 'description': 'УЗИ различных органов и систем'},
+    {'name': 'Ультразвуковая диагностика', 'icon': 'bi-soundwave',
+     'description': 'УЗИ различных органов и систем'},
     {'name': 'Функциональная диагностика', 'icon': 'bi-activity',
      'description': 'ЭКГ, спирометрия и другие исследования'},
 ]
@@ -86,90 +89,163 @@ for i, service_data in enumerate(services_data, 1):
     )
     print(f'{i}. {service.name} - {service.price} руб.')
 
-print(f'\n✅ Готово! Создано:')
+print(f'\n✅ Услуги созданы!')
 print(f'   - Категорий: {ServiceCategory.objects.count()}')
 print(f'   - Услуг: {Service.objects.count()}')
 print(f'   - Активных услуг: {Service.objects.filter(is_active=True).count()}')
 
-# Добавляем создание врачей
-print('\nСоздаем врачей...')
+# 3. Создаем врачей
+print('\n' + '=' * 50)
+print('Создаем врачей...')
 
-# Сначала создаем пользователей-врачей
+# Сначала проверяем, есть ли уже суперпользователь
+try:
+    admin_user = CustomUser.objects.get(username='admin')
+    print('✓ Суперпользователь admin уже существует')
+except CustomUser.DoesNotExist:
+    print('✗ Суперпользователь admin не найден')
+
+# Данные врачей
 doctors_data = [
     {
-        'username': 'ivanov',
+        'username': 'dr_ivanov',
         'first_name': 'Иван',
         'last_name': 'Иванов',
         'email': 'ivanov@meddiagnostic.ru',
-        'is_doctor': True,
         'specialty': 'Терапевт',
-        'education': 'МГМУ им. Сеченова',
+        'education': 'МГМУ им. Сеченова, высшая категория',
         'experience': 15,
     },
     {
-        'username': 'petrova',
+        'username': 'dr_petrova',
         'first_name': 'Мария',
         'last_name': 'Петрова',
         'email': 'petrova@meddiagnostic.ru',
-        'is_doctor': True,
         'specialty': 'Кардиолог',
-        'education': 'РНИМУ им. Пирогова',
+        'education': 'РНИМУ им. Пирогова, кандидат медицинских наук',
         'experience': 12,
     },
     {
-        'username': 'sidorov',
+        'username': 'dr_sidorov',
         'first_name': 'Алексей',
         'last_name': 'Сидоров',
         'email': 'sidorov@meddiagnostic.ru',
-        'is_doctor': True,
         'specialty': 'Невролог',
-        'education': 'СПбГМУ им. Павлова',
+        'education': 'СПбГМУ им. Павлова, доктор медицинских наук',
         'experience': 10,
     },
     {
-        'username': 'smirnova',
+        'username': 'dr_smirnova',
         'first_name': 'Елена',
         'last_name': 'Смирнова',
         'email': 'smirnova@meddiagnostic.ru',
-        'is_doctor': True,
         'specialty': 'УЗИ-специалист',
-        'education': 'КГМУ',
+        'education': 'КГМУ, высшая категория',
         'experience': 8,
     },
 ]
 
+created_doctors = []
 for i, doc_data in enumerate(doctors_data, 1):
-    # Создаем или получаем пользователя
-    user, created = CustomUser.objects.get_or_create(
-        username=doc_data['username'],
-        defaults={
-            'first_name': doc_data['first_name'],
-            'last_name': doc_data['last_name'],
-            'email': doc_data['email'],
-            'is_doctor': True,
-            'is_patient': False,
-        }
-    )
+    # Проверяем, существует ли пользователь
+    try:
+        user = CustomUser.objects.get(username=doc_data['username'])
+        print(f'{i}. Пользователь {doc_data["username"]} уже существует')
+    except CustomUser.DoesNotExist:
+        # Создаем нового пользователя
+        user = CustomUser.objects.create_user(
+            username=doc_data['username'],
+            first_name=doc_data['first_name'],
+            last_name=doc_data['last_name'],
+            email=doc_data['email'],
+            password='doctor123',  # Стандартный пароль
+            is_doctor=True,
+            is_patient=False,
+        )
+        print(f'{i}. Создан пользователь: {doc_data["first_name"]} {doc_data["last_name"]}')
 
-    if created:
-        user.set_password('doctor123')  # Стандартный пароль
-        user.save()
-
-    # Создаем профиль врача
-    doctor, doc_created = Doctor.objects.get_or_create(
+    # Создаем или обновляем профиль врача
+    doctor, created = Doctor.objects.get_or_create(
         user=user,
         defaults={
             'specialty': doc_data['specialty'],
             'education': doc_data['education'],
             'experience': doc_data['experience'],
             'license_number': f'MED-LIC-{1000 + i}',
+            'is_active': True,
         }
     )
 
-    if doc_created:
-        print(f'{i}. Доктор {doc_data["first_name"]} {doc_data["last_name"]} - {doc_data["specialty"]}')
+    if created:
+        created_doctors.append(doctor)
+        print(f'   ✓ Создан врач: {doc_data["specialty"]}')
     else:
-        print(f'{i}. Доктор {doc_data["first_name"]} {doc_data["last_name"]} уже существует')
+        print(f'   ✓ Врач уже существует: {doc_data["specialty"]}')
 
-print('\n✅ Всего создано:')
+print('\n' + '=' * 50)
+print('✅ ВСЕГО СОЗДАНО:')
+print(f'   - Категорий услуг: {ServiceCategory.objects.count()}')
+print(f'   - Медицинских услуг: {Service.objects.count()}')
 print(f'   - Врачей: {Doctor.objects.count()}')
+print(f'   - Пользователей: {CustomUser.objects.count()}')
+
+# 4. Создаем тестовые записи на прием (опционально)
+print('\n' + '=' * 50)
+print('Создаем тестовые записи на прием...')
+
+# Получаем обычного пользователя для теста
+try:
+    test_patient = CustomUser.objects.get(username='testuser')
+except CustomUser.DoesNotExist:
+    # Создаем тестового пациента если нет
+    test_patient = CustomUser.objects.create_user(
+        username='testuser',
+        first_name='Тестовый',
+        last_name='Пациент',
+        email='test@meddiagnostic.ru',
+        password='test123',
+        is_patient=True,
+        is_doctor=False,
+    )
+    print('✓ Создан тестовый пациент: testuser/test123')
+
+# Создаем несколько тестовых записей
+from appointments.models import Appointment
+from datetime import date, timedelta
+import random
+
+# Очищаем старые тестовые записи (опционально)
+Appointment.objects.filter(patient=test_patient).delete()
+
+# Создаем новые записи
+test_services = Service.objects.filter(is_active=True)[:3]
+
+for i, service in enumerate(test_services, 1):
+    appointment_date = date.today() + timedelta(days=i + 5)
+    appointment_time = f"{9 + i}:00"
+
+    # Выбираем случайного врача или None
+    doctor = random.choice([None] + list(Doctor.objects.filter(is_active=True)[:2]))
+
+    appointment = Appointment.objects.create(
+        patient=test_patient,
+        doctor=doctor,
+        service=service,
+        appointment_date=appointment_date,
+        appointment_time=appointment_time,
+        status=random.choice(['pending', 'confirmed', 'completed']),
+        notes=f'Тестовая запись #{i}',
+    )
+
+    status_display = dict(Appointment.STATUS_CHOICES)[appointment.status]
+    doctor_name = doctor.user.get_full_name() if doctor else "Любой врач"
+
+    print(f'{i}. Запись создана: {service.name} - {appointment_date} {appointment_time} ({status_display})')
+
+print('\n' + '=' * 50)
+print('🎉 ВСЕ ТЕСТОВЫЕ ДАННЫЕ СОЗДАНЫ УСПЕШНО!')
+print('\nДоступы для тестирования:')
+print('1. Администратор: admin / ваш_пароль')
+print('2. Врачи: dr_ivanov / doctor123, dr_petrova / doctor123, и т.д.')
+print('3. Тестовый пациент: testuser / test123')
+print('\nЗапустите сервер: python manage.py runserver')
