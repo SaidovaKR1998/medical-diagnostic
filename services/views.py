@@ -5,19 +5,36 @@ from .models import Service, ServiceCategory
 
 def service_list(request):
     """Список всех услуг"""
-    categories = ServiceCategory.objects.all().prefetch_related('services')
+    try:
+        categories = ServiceCategory.objects.all()
 
-    # Проверим, есть ли данные
-    print(f"Категорий найдено: {categories.count()}")
-    for category in categories:
-        print(f"  - {category.name}: {category.services.count()} услуг")
+        print(f"[DEBUG] Категорий: {categories.count()}")
 
-    context = {
-        'title': 'Наши услуги',
-        'categories': categories,
-    }
-    return render(request, 'services/list.html', context)
+        # Проверяем данные
+        for cat in categories:
+            print(f"[DEBUG] {cat.name}: {cat.services.count()} услуг")
+            for service in cat.services.all()[:2]:
+                print(f"  - {service.name}: {service.price} руб.")
 
+        context = {
+            'title': 'Наши услуги',
+            'categories': categories,
+        }
+
+        # Используем простой шаблон для теста
+        return render(request, 'services/list_simple.html', context)
+
+    except Exception as e:
+        print(f"[ERROR] service_list: {str(e)}")
+        import traceback
+        traceback.print_exc()
+
+        # Возвращаем очень простую страницу с ошибкой
+        return HttpResponse(f"""
+        <h1>Ошибка загрузки услуг</h1>
+        <p>Произошла ошибка: {str(e)}</p>
+        <a href="/">На главную</a>
+        """)
 
 def service_detail(request, slug):
     """Детальная информация об услуге"""
