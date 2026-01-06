@@ -8,83 +8,115 @@ from accounts.models import CustomUser
 
 
 @login_required
+def appointment_list(request):
+    """Список записей пользователя"""
+    try:
+        appointments = Appointment.objects.filter(
+            patient=request.user
+        ).order_by('-appointment_date', '-appointment_time')
+
+        # Статистика
+        pending = appointments.filter(status='pending').count()
+        confirmed = appointments.filter(status='confirmed').count()
+        completed = appointments.filter(status='completed').count()
+
+        context = {
+            'title': 'Мои записи',
+            'appointments': appointments,
+            'pending_count': pending,
+            'confirmed_count': confirmed,
+            'completed_count': completed,
+            'today': timezone.now().date(),
+        }
+        return render(request, 'appointments/list.html', context)
+
+    except Exception as e:
+        print(f"[ERROR] appointment_list: {e}")
+        # Временное решение - простая страница
+        return render(request, 'appointments/simple_list.html', {
+            'title': 'Мои записи',
+            'appointments': [],
+        })
+
+
+@login_required
 def create_appointment(request):
     """Создание новой записи на прием"""
-    services = Service.objects.filter(is_active=True)
-    doctors = Doctor.objects.filter(is_active=True)
+    try:
+        services = Service.objects.filter(is_active=True)
+        doctors = Doctor.objects.filter(is_active=True)
 
-    # Получаем service_id из параметра URL если есть
-    selected_service_id = request.GET.get('service')
+        selected_service_id = request.GET.get('service')
 
-    if request.method == 'POST':
-        try:
-            # Получаем данные из формы
+        if request.method == 'POST':
+            # Упрощенная обработка для теста
             service_id = request.POST.get('service')
-            doctor_id = request.POST.get('doctor')
             appointment_date = request.POST.get('appointment_date')
             appointment_time = request.POST.get('appointment_time')
-            notes = request.POST.get('notes', '')
 
-            # Валидация
-            if not all([service_id, appointment_date, appointment_time]):
+            if service_id and appointment_date and appointment_time:
+                service = Service.objects.get(id=service_id)
+
+                appointment = Appointment.objects.create(
+                    patient=request.user,
+                    service=service,
+                    appointment_date=appointment_date,
+                    appointment_time=appointment_time,
+                    status='pending',
+                    notes=request.POST.get('notes', '')
+                )
+
+                messages.success(request,
+                                 f'Запись на {appointment.service.name} создана! ' +
+                                 'Мы свяжемся с вами для подтверждения.')
+                return redirect('appointments:list')
+            else:
                 messages.error(request, 'Заполните все обязательные поля')
-                return redirect('appointments:create')
 
-            # Получаем объекты
-            service = Service.objects.get(id=service_id, is_active=True)
-            doctor = None
-            if doctor_id:
-                doctor = Doctor.objects.get(id=doctor_id, is_active=True)
+        context = {
+            'title': 'Запись на прием',
+            'services': services,
+            'doctors': doctors,
+            'selected_service_id': selected_service_id,
+            'today': timezone.now().date().isoformat(),
+            'min_date': (timezone.now().date()).isoformat(),
+        }
+        return render(request, 'appointments/create.html', context)
 
-            # Создаем запись
-            appointment = Appointment.objects.create(
-                patient=request.user,
-                doctor=doctor,
-                service=service,
-                appointment_date=appointment_date,
-                appointment_time=appointment_time,
-                notes=notes,
-                status='pending'
-            )
+    except Exception as e:
+        print(f"[ERROR] create_appointment: {e}")
+        messages.error(request, f'Ошибка при создании записи: {str(e)}')
+        return redirect('appointments:list')
 
-            messages.success(request,
-                             f'Запись на {appointment_date} в {appointment_time} создана! ' +
-                             'Мы свяжемся с вами для подтверждения.')
-            return redirect('appointments:list')
-
-        except Service.DoesNotExist:
-            messages.error(request, 'Услуга не найдена')
-        except Doctor.DoesNotExist:
-            messages.error(request, 'Врач не найден')
-        except Exception as e:
-            messages.error(request, f'Ошибка при создании записи: {str(e)}')
-
-    context = {
-        'title': 'Запись на прием',
-        'services': services,
-        'doctors': doctors,
-        'selected_service_id': selected_service_id,
-        'today': timezone.now().date().isoformat(),
-    }
-    return render(request, 'appointments/create.html', context)
-
-@login_required
-def appointment_list(request):
-    """Список записей"""
-    return render(request, 'appointments/list.html', {
-        'title': 'Мои записи'
-    })
-
-@login_required
-def create_appointment(request):
-    """Создание новой записи"""
-    return render(request, 'appointments/create.html', {
-        'title': 'Запись на прием'
-    })
 
 @login_required
 def appointment_detail(request, pk):
     """Детали записи"""
-    return render(request, 'appointments/detail.html', {
-        'title': 'Детали записи'
+    appointment = get_object_or_404(Appointment, pk=pk, patient=request.user)
+
+    context = {
+        'title': f'Запись #{appointment.id}',
+        'appointment': appointment,
+    }
+    return render(request, 'appointments/detail.html', context)
+
+
+@login_required
+def cancel_appointment(request, pk):
+    """Отмена записи"""
+    appointment = get_object_or_404(
+        Appointment,
+        pk=pk,
+        patient=request.user,
+        status__in=['pending', 'confirmed']
+    )
+
+    if request.method == 'POST':
+        appointment.status = 'cancelled'
+        appointment.save()
+        messages.success(request, 'Запись успешно отменена.')
+        return redirect('appointments:list')
+
+    return render(request, 'appointments/cancel.html', {
+        'appointment': appointment
     })
