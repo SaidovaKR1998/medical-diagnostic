@@ -6,6 +6,12 @@ from .models import Service, ServiceCategory
 def service_list(request):
     """Список всех услуг"""
     categories = ServiceCategory.objects.all().prefetch_related('services')
+
+    # Проверим, есть ли данные
+    print(f"Категорий найдено: {categories.count()}")
+    for category in categories:
+        print(f"  - {category.name}: {category.services.count()} услуг")
+
     context = {
         'title': 'Наши услуги',
         'categories': categories,
