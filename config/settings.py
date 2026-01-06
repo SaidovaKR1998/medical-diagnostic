@@ -1,9 +1,9 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv  # Добавляем эту строку
+##from dotenv import load_dotenv  # Добавляем эту строку
 
 # Загружаем переменные окружения из .env файла
-load_dotenv()
+##load_dotenv()
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
@@ -82,34 +82,62 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 # Получаем DATABASE_URL из переменных окружения или используем SQLite для разработки
-import os
-from urllib.parse import urlparse
+##import os
+##from urllib.parse import urlparse
 
 # Для Docker используем DATABASE_URL, для локальной разработки - SQLite
-DATABASE_URL = os.environ.get('DATABASE_URL')
+##DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if DATABASE_URL:
+##if DATABASE_URL:
     # Парсим DATABASE_URL (формат: postgres://user:password@host:port/dbname)
-    url = urlparse(DATABASE_URL)
+##    url = urlparse(DATABASE_URL)
 
+##    DATABASES = {
+##        'default': {
+##            'ENGINE': 'django.db.backends.postgresql',
+##            'NAME': url.path[1:],  # убираем первый слэш
+##            'USER': url.username,
+##            'PASSWORD': url.password,
+##            'HOST': url.hostname,
+##            'PORT': url.port,
+##        }
+##    }
+##else:
+    # Локальная разработка без Docker - используем SQLite
+##    DATABASES = {
+##        'default': {
+##            'ENGINE': 'django.db.backends.sqlite3',
+##            'NAME': BASE_DIR / 'db.sqlite3',
+##        }
+##    }
+
+
+
+# Простые настройки базы данных
+USE_POSTGRESQL = False  # Поставьте True если хотите использовать PostgreSQL
+
+if USE_POSTGRESQL:
+    # Настройки PostgreSQL
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': url.path[1:],  # убираем первый слэш
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port,
+            'NAME': 'medical_db',
+            'USER': 'medical_user',
+            'PASSWORD': 'medical_password123',
+            'HOST': 'localhost',
+            'PORT': '5432',
         }
     }
 else:
-    # Локальная разработка без Docker - используем SQLite
+    # Настройки SQLite (проще для разработки)
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+
+
 
 
 # Password validation
