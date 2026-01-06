@@ -45,9 +45,10 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="bi bi-calendar-check me-1"></i>Запись
-                        </a>
+                       <a class="nav-link {% if 'appointments' in request.path %}active{% endif %}"
+                          href="{% url 'appointments:list' %}">
+                           <i class="bi bi-calendar-check me-1"></i>Запись
+                       </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if 'contacts' in request.path %}active{% endif %}" href="{% url 'contacts' %}">
