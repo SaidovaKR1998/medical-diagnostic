@@ -111,6 +111,43 @@
                 </div>
             </div>
 
+            <!-- Команда врачей -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="display-5 fw-bold text-center mb-5">Наша команда</h2>
+
+        <div class="row g-4">
+            {% for doctor in doctors %}
+            <div class="col-md-6 col-lg-3">
+                <div class="card text-center h-100 border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <div class="rounded-circle bg-primary d-inline-flex align-items-center justify-content-center"
+                                 style="width: 100px; height: 100px;">
+                                <i class="bi bi-person-fill text-white fs-1"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title mb-1">Доктор {{ doctor.user.get_full_name }}</h5>
+                        <p class="text-primary fw-bold mb-2">{{ doctor.specialty }}</p>
+                        <p class="text-muted small">
+                            <i class="bi bi-award me-1"></i>Стаж: {{ doctor.experience }} лет<br>
+                            <i class="bi bi-mortarboard me-1"></i>{{ doctor.education|truncatechars:30 }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Информация о врачах скоро будет добавлена
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
             <div class="col-lg-4">
                 <!-- Боковая панель -->
                 <div class="card border-0 shadow-sm sticky-top" style="top: 100px;">
