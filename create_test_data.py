@@ -90,3 +90,86 @@ print(f'\n✅ Готово! Создано:')
 print(f'   - Категорий: {ServiceCategory.objects.count()}')
 print(f'   - Услуг: {Service.objects.count()}')
 print(f'   - Активных услуг: {Service.objects.filter(is_active=True).count()}')
+
+# Добавляем создание врачей
+print('\nСоздаем врачей...')
+
+# Сначала создаем пользователей-врачей
+doctors_data = [
+    {
+        'username': 'ivanov',
+        'first_name': 'Иван',
+        'last_name': 'Иванов',
+        'email': 'ivanov@meddiagnostic.ru',
+        'is_doctor': True,
+        'specialty': 'Терапевт',
+        'education': 'МГМУ им. Сеченова',
+        'experience': 15,
+    },
+    {
+        'username': 'petrova',
+        'first_name': 'Мария',
+        'last_name': 'Петрова',
+        'email': 'petrova@meddiagnostic.ru',
+        'is_doctor': True,
+        'specialty': 'Кардиолог',
+        'education': 'РНИМУ им. Пирогова',
+        'experience': 12,
+    },
+    {
+        'username': 'sidorov',
+        'first_name': 'Алексей',
+        'last_name': 'Сидоров',
+        'email': 'sidorov@meddiagnostic.ru',
+        'is_doctor': True,
+        'specialty': 'Невролог',
+        'education': 'СПбГМУ им. Павлова',
+        'experience': 10,
+    },
+    {
+        'username': 'smirnova',
+        'first_name': 'Елена',
+        'last_name': 'Смирнова',
+        'email': 'smirnova@meddiagnostic.ru',
+        'is_doctor': True,
+        'specialty': 'УЗИ-специалист',
+        'education': 'КГМУ',
+        'experience': 8,
+    },
+]
+
+for i, doc_data in enumerate(doctors_data, 1):
+    # Создаем или получаем пользователя
+    user, created = CustomUser.objects.get_or_create(
+        username=doc_data['username'],
+        defaults={
+            'first_name': doc_data['first_name'],
+            'last_name': doc_data['last_name'],
+            'email': doc_data['email'],
+            'is_doctor': True,
+            'is_patient': False,
+        }
+    )
+
+    if created:
+        user.set_password('doctor123')  # Стандартный пароль
+        user.save()
+
+    # Создаем профиль врача
+    doctor, doc_created = Doctor.objects.get_or_create(
+        user=user,
+        defaults={
+            'specialty': doc_data['specialty'],
+            'education': doc_data['education'],
+            'experience': doc_data['experience'],
+            'license_number': f'MED-LIC-{1000 + i}',
+        }
+    )
+
+    if doc_created:
+        print(f'{i}. Доктор {doc_data["first_name"]} {doc_data["last_name"]} - {doc_data["specialty"]}')
+    else:
+        print(f'{i}. Доктор {doc_data["first_name"]} {doc_data["last_name"]} уже существует')
+
+print('\n✅ Всего создано:')
+print(f'   - Врачей: {Doctor.objects.count()}')
