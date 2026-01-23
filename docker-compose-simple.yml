@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: med_diagnostic_db
+    environment:
+      POSTGRES_DB: medical_db
+      POSTGRES_USER: medical_user
+      POSTGRES_PASSWORD: medical_password123
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    container_name: med_diagnostic_web
+    command: >
+      sh -c "sleep 5 &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-production-key-change-in-production
+      - DATABASE_URL=postgres://medical_user:medical_password123@db:5432/medical_db
+      - ALLOWED_HOSTS=localhost,127.0.0.1

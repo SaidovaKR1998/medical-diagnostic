@@ -1,20 +1,26 @@
 import os
 from pathlib import Path
+##from dotenv import load_dotenv  # Добавляем эту строку
+
+# Загружаем переменные окружения из .env файла
+##load_dotenv()
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ваш-уникальный-ключ-для-медицинского-проекта-2025'
+# Секретный ключ из переменных окружения
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ваш-уникальный-ключ-для-медицинского-проекта-2025')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Безопасность для Docker/продакшена
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+# Разрешённые хосты
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
 
 # Application definition
@@ -27,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Ваши приложения (пока добавляем, потом создадим)
+    # Приложения (пока добавляем, потом создадим)
     'main',
     'services',
     'appointments',
@@ -36,9 +42,10 @@ INSTALLED_APPS = [
     # Сторонние приложения
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
 ]
 
-# Настройки crispy forms
+# Настройки crispy forms для Bootstrap 5
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
@@ -71,16 +78,66 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Получаем DATABASE_URL из переменных окружения или используем SQLite для разработки
+##import os
+##from urllib.parse import urlparse
+
+# Для Docker используем DATABASE_URL, для локальной разработки - SQLite
+##DATABASE_URL = os.environ.get('DATABASE_URL')
+
+##if DATABASE_URL:
+    # Парсим DATABASE_URL (формат: postgres://user:password@host:port/dbname)
+##    url = urlparse(DATABASE_URL)
+
+##    DATABASES = {
+##        'default': {
+##            'ENGINE': 'django.db.backends.postgresql',
+##            'NAME': url.path[1:],  # убираем первый слэш
+##            'USER': url.username,
+##            'PASSWORD': url.password,
+##            'HOST': url.hostname,
+##            'PORT': url.port,
+##        }
+##    }
+##else:
+    # Локальная разработка без Docker - используем SQLite
+##    DATABASES = {
+##        'default': {
+##            'ENGINE': 'django.db.backends.sqlite3',
+##            'NAME': BASE_DIR / 'db.sqlite3',
+##        }
+##    }
+
+
+
+# Простые настройки базы данных
+USE_POSTGRESQL = False  # Поставьте True если хотите использовать PostgreSQL
+
+if USE_POSTGRESQL:
+    # Настройки PostgreSQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'medical_db',
+            'USER': 'medical_user',
+            'PASSWORD': 'medical_password123',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
     }
-}
+else:
+    # Настройки SQLite (проще для разработки)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+
 
 
 # Password validation
@@ -122,13 +179,23 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Перенаправления после входа/выхода
-LOGIN_REDIRECT_URL = '/accounts/profile/'
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/accounts/login/'
+# Перенаправление после входа/выхода
+LOGIN_REDIRECT_URL = '/'  # После входа - на главную
+LOGOUT_REDIRECT_URL = '/'  # После выхода - на главную
+LOGIN_URL = '/accounts/login/'  # URL для страницы входа
 
 # Язык и время
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_TZ = True
+
+# Форматы дат для России
+DATE_FORMAT = 'd.m.Y'
+DATETIME_FORMAT = 'd.m.Y H:i'
+SHORT_DATE_FORMAT = 'd.m.Y'
+SHORT_DATETIME_FORMAT = 'd.m.Y H:i'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

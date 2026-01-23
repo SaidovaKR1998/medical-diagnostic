@@ -1,0 +1,18 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Отмена записи{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">Отмена записи</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <p>Функция отмены записи в разработке.</p>
+            <a href="{% url 'appointments:list' %}" class="btn btn-primary">
+                Вернуться к списку записей
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
